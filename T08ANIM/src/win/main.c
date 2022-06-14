@@ -135,6 +135,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine,
   UpdateWindow(hWnd);
 
   PP6_AnimAddUnit(PP6_UnitCreateCow());
+  PP6_AnimAddUnit(PP6_AnimUnitCreateControl());
   while (TRUE)
     if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
     {
