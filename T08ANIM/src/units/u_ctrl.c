@@ -4,14 +4,17 @@
  * PURPOSE    : 3D animation project.
  *              .
  */
+#include <stdio.h>
 #include "Units/units.h"
 #include "anim/anim.h"
-
-/*typedef struct
+#include <mmsystem.h>
+#pragma comment(lib, "winmm")
+typedef struct
 {
   UNIT_BASE_FIELDS;
-
-}pp6UNIT_CONTROL*/
+  VEC CamLoc, CamDir;
+  DBL speed;
+}pp6UNIT_CONTROL;
 
 /* Unit initialization function.
  * ARGUMENTS:
@@ -21,8 +24,9 @@
  *       pp6ANIM *Ani;
  * RETURNS: None.
  */
-/*static VOID PP6_UnitInit( pp6UNIT_CONTROL *Uni, pp6ANIM *Ani )
+static VOID PP6_UnitInit( pp6UNIT_CONTROL *Uni, pp6ANIM *Ani )
 {
+  PP6_RndCamSet(VecSet(0, 1, 50), VecSet(0, 0, 1), VecSet(0, 1, 0));
 }/* End of 'VG4_UnitInit' function */
 
 /* Unit deinitialization function.
@@ -33,7 +37,7 @@
  *       vg4ANIM *Ani;
  * RETURNS: None.
  */
-/*static VOID PP6_UnitClose( pp6UNIT_CONTROL *Uni, pp6ANIM *Ani )
+static VOID PP6_UnitClose( pp6UNIT_CONTROL *Uni, pp6ANIM *Ani )
 {
 } /* End of 'VG4_UnitClose' function */
 
@@ -45,13 +49,10 @@
  *       vg4ANIM *Ani;
  * RETURNS: None.
  */
-/*static VOID PP6_UnitResponse( pp6UNIT_CONTROL *Uni, pp6ANIM *Ani )
-/*{
-  Uni->CamLoc =
-    PointTransform(Uni->CamLoc,
-      MatrRotateY(Ani->DeltaTime * Uni->AngleSpeed * Ani->Mdx));
-  if ((GetSyncKeyState('P') & 0 x 8000) != 0)
-    Ani->Isause = True;
+static VOID PP6_UnitResponse( pp6UNIT_CONTROL *Uni, pp6ANIM *Ani )
+{
+  if (Ani->KeysClick['P'])
+    Ani->IsPause = !Ani->IsPause;
 } /* End of 'VG4_UnitResponse' function */
 
 /* Unit render function.
@@ -62,8 +63,8 @@
  *       vg4ANIM *Ani;
  * RETURNS: None.
  */
-/*static VOID PP6_UnitRender( pp6UNIT_CONTROL *Uni, pp6ANIM *Ani )
-/*{
+static VOID PP6_UnitRender( pp6UNIT_CONTROL *Uni, pp6ANIM *Ani )
+{
 } /* End of 'VG4_UnitRender' function */
 
 /* Unit creation function.
@@ -73,20 +74,19 @@
  * RETURNS:
  *   (vg4UNIT *) pointer to created unit.
  */
-/*pp6UNIT * PP6_AnimUnitCreate( INT Size )
+pp6UNIT * PP6_AnimUnitCreateControl( VOID )
 {
   pp6UNIT *Uni;
 
   /* Memory allocation */
-  /*if (Size < sizeof(pp6UNIT) || (Uni = malloc(Size)) == NULL)
+  if ((Uni = PP6_AnimUnitCreate(sizeof(pp6UNIT_CONTROL))) == NULL)
     return NULL;
-  memset(Uni, 0, Size);
 
   /* Setup unit methods */
- /* Uni->Init = PP6_UnitInit;
-  Uni->Close = PP6_UnitClose;
-  Uni->Response = PP6_UnitResponse;
-  Uni->Render = PP6_UnitRender;
+  Uni->Init = (VOID *)PP6_UnitInit;
+  Uni->Close = (VOID *)PP6_UnitClose;
+  Uni->Response = (VOID *)PP6_UnitResponse;
+  Uni->Render = (VOID *)PP6_UnitRender;
 
   return Uni;
 } /* End of 'VG4_AnimUnitCreate' function */
