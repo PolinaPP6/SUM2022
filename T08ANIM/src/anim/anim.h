@@ -23,9 +23,10 @@ typedef struct tagpp6ANIM
   GlobalTime, GlobalDeltaTime, /* Global time and interframe interval */
   Time, DeltaTime,             /* Time with pause and interframe interval */
   FPS;                         /* Frames per second value */
-
   BOOL
   IsPause;                     /* Pause flag */
+  BYTE Keys[256];
+  BYTE KeysClick[256];
 } pp6ANIM;
 
 #define UNIT_BASE_FIELDS\
@@ -57,7 +58,15 @@ VOID TimerResponse( VOID );
 /*COW*/
 pp6UNIT * PP6_UnitCreateCow( VOID );
 
-#endif /* __anim_h_ */
+/*CONTROL*/
+pp6UNIT * PP6_AnimUnitCreateControl( VOID );
+
 /*Mouse Wheel*/
 extern INT PP6_MouseWheel;
+
+VOID PP6_AnimInputInit( VOID );
+VOID PP6_AnimInputResponse( VOID );
+
+#endif /* __anim_h_ */
+
 

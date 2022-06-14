@@ -7,29 +7,33 @@
 #include "anim/anim.h"
 #include <mmsystem.h>
 #pragma comment(lib, "winmm")
+#include <string.h>
 
 INT PP6_MouseWheel;
 
-BYTE Keys[256];
-BYTE KeysClick[256];
+/*Keys*/
 BYTE KeysOld[256];
 
 static VOID PP6_AnimKeyboardInit( VOID )
 {
-  GetKeyboardState(Keys);
-  {
-    INT i;
-    for (i = 0; i < 256; i++)
-    {
-      Keys[i] >>= 7;
-      KeysClick[i] = Keys[i] && !KeysOld[i];
-    }
-  memcpy(KeysOld, Keys, 256);
-  }
+  INT i;
+
+  memcpy(KeysOld, PP6_Anim.Keys, 256);
+  GetKeyboardState(PP6_Anim.Keys);
+  for (i = 0; i < 256; i++)
+    KeysOld[i] = PP6_Anim.KeysClick[i];
 }
 
 static VOID PP6_AnimKeyboardResponse( VOID )
 {
+  INT i;
+
+  GetKeyboardState(PP6_Anim.Keys);
+  for (i = 0; i < 256; i++)
+  {
+    PP6_Anim.Keys[i] >>= 7;
+    PP6_Anim.KeysClick[i] = PP6_Anim.Keys[i] && !KeysOld[i];
+  }
 }
 
 static VOID PP6_AnimMouseInit( VOID )
