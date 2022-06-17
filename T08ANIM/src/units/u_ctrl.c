@@ -13,7 +13,7 @@ typedef struct
 {
   UNIT_BASE_FIELDS;
   VEC CamLoc, CamDir;
-  DBL speed;
+  DBL speed, AngleSpeed;
 }pp6UNIT_CONTROL;
 
 /* Unit initialization function.
@@ -26,7 +26,10 @@ typedef struct
  */
 static VOID PP6_UnitInit( pp6UNIT_CONTROL *Uni, pp6ANIM *Ani )
 {
-  PP6_RndCamSet(VecSet(0, 1, 50), VecSet(0, 0, 1), VecSet(0, 1, 0));
+  Uni->CamLoc = VecSet(0, 1, 50);
+  Uni->speed = 0.1;
+  Uni->CamDir = VecNormalize(VecSet(-1, -1, -1));
+  Uni->AngleSpeed = 0.1;
 }/* End of 'VG4_UnitInit' function */
 
 /* Unit deinitialization function.
@@ -53,6 +56,18 @@ static VOID PP6_UnitResponse( pp6UNIT_CONTROL *Uni, pp6ANIM *Ani )
 {
   if (Ani->KeysClick['P'])
     Ani->IsPause = !Ani->IsPause;
+  /*Keys*/
+  Uni->CamLoc = 
+    VecAddVec(Uni->CamLoc,
+     VecMulNum(Uni->CamDir, Ani->DeltaTime * Uni->speed *
+      (Ani->Keys[VK_UP] - Ani->Keys[VK_DOWN])));
+  /*WheelMouse*/
+  Uni->CamLoc =
+    PointTransform(Uni->CamLoc,
+      MatrRotateY(Ani->Keys[VK_LBUTTON] *
+        Ani->GlobalDeltaTime * Uni->AngleSpeed * Ani->Mdx));
+  PP6_RndCamSet(Uni->CamLoc, VecSet(0, 0, 0), VecSet(0, 1, 0));
+
 } /* End of 'VG4_UnitResponse' function */
 
 /* Unit render function.
@@ -65,6 +80,10 @@ static VOID PP6_UnitResponse( pp6UNIT_CONTROL *Uni, pp6ANIM *Ani )
  */
 static VOID PP6_UnitRender( pp6UNIT_CONTROL *Uni, pp6ANIM *Ani )
 {
+  static CHAR Buf[102];
+  SetTextColor(Ani->hDC, RGB(0, 0, 0));
+  SetBkMode(Ani->hDC, TRANSPARENT);
+  TextOut(Ani->hDC, 10, 10, Buf, sprintf(Buf, "FPS; %0.3f, %f, %f", Ani->FPS, Ani->Mx, Ani->My));
 } /* End of 'VG4_UnitRender' function */
 
 /* Unit creation function.
@@ -74,7 +93,7 @@ static VOID PP6_UnitRender( pp6UNIT_CONTROL *Uni, pp6ANIM *Ani )
  * RETURNS:
  *   (vg4UNIT *) pointer to created unit.
  */
-pp6UNIT * PP6_AnimUnitCreateControl( VOID )
+pp6UNIT * PP6_UnitCreateControl( VOID )
 {
   pp6UNIT *Uni;
 
