@@ -11,7 +11,7 @@ VOID PP6_AnimInit( HWND PP6_hRndWnd )
 {
   PP6_Anim.hWnd = PP6_hRndWnd;
   PP6_RndInit(PP6_hRndWnd);
-
+  PP6_AnimInputInit();
 
   TimerInit();
 }
@@ -47,6 +47,7 @@ VOID PP6_AnimRender( VOID )
   INT i;
 
   TimerResponse();
+  PP6_AnimInputResponse();
 
   for (i = 0; i < PP6_Anim.NumOfUnits; i++)
     PP6_Anim.Units[i]->Response(PP6_Anim.Units[i], &PP6_Anim);

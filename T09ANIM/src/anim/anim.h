@@ -27,6 +27,7 @@ typedef struct tagpp6ANIM
   BYTE
     Keys[256],
     KeysClick[256];
+  INT Mdx, Mdy, Mdz, Mx, My, Mz;
 } pp6ANIM;
 
 #define UNIT_BASE_FIELDS\
@@ -48,6 +49,7 @@ VOID PP6_AnimRender( VOID );
 VOID PP6_AnimAddUnit( pp6UNIT *Uni );
 VOID PP6_AnimFlipFullScreen( VOID );
 VOID PP6_AnimExit( VOID );
+pp6UNIT * PP6_AnimUnitCreate( INT Size );
 extern pp6ANIM PP6_Anim;
 
 /*timer*/
@@ -57,6 +59,12 @@ VOID TimerResponse( VOID );
 
 /*COW*/
 pp6UNIT * PP6_UnitCreateCow( VOID );
+
+/*CONTROL*/
+pp6UNIT * PP6_UnitCreateControl( VOID );
+
+/*LANDSCAPE*/
+pp6UNIT * PP6_UnitCreateLand( VOID );
 
 /*Mouse Wheel*/
 extern INT PP6_MouseWheel;
