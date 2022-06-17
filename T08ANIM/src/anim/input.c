@@ -38,10 +38,38 @@ static VOID PP6_AnimKeyboardResponse( VOID )
 
 static VOID PP6_AnimMouseInit( VOID )
 {
+  POINT pt;
+
+  GetCursorPos(&pt);
+  ScreenToClient(PP6_Anim.hWnd, &pt);
+
+  PP6_Anim.Mdx = pt.x - PP6_Anim.Mx;
+  PP6_Anim.Mdy = pt.y - PP6_Anim.My;
+
+  PP6_Anim.Mx = pt.x;
+  PP6_Anim.My = pt.y;
+
+  PP6_Anim.Mdz = PP6_MouseWheel;
+  PP6_Anim.Mz += PP6_MouseWheel;
+  PP6_MouseWheel = 0;
 }
 
 static VOID PP6_AnimMouseResponse( VOID )
 {
+  POINT pt;
+
+  GetCursorPos(&pt);
+  ScreenToClient(PP6_Anim.hWnd, &pt);
+
+  PP6_Anim.Mdx = PP6_Anim.Mx;
+  PP6_Anim.Mdy = PP6_Anim.My;
+
+  PP6_Anim.Mx = pt.x;
+  PP6_Anim.My = pt.y;
+
+  PP6_Anim.Mdz = PP6_MouseWheel;
+  PP6_Anim.Mz += PP6_MouseWheel;
+  PP6_MouseWheel = 0;
 }
 
 static VOID PP6_AnimJoystickInit( VOID )

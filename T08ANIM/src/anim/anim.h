@@ -27,6 +27,7 @@ typedef struct tagpp6ANIM
   IsPause;                     /* Pause flag */
   BYTE Keys[256];
   BYTE KeysClick[256];
+  INT Mdx, Mdy, Mdz, Mx, My, Mz;
 } pp6ANIM;
 
 #define UNIT_BASE_FIELDS\
@@ -59,7 +60,7 @@ VOID TimerResponse( VOID );
 pp6UNIT * PP6_UnitCreateCow( VOID );
 
 /*CONTROL*/
-pp6UNIT * PP6_AnimUnitCreateControl( VOID );
+pp6UNIT * PP6_UnitCreateControl( VOID );
 
 /*Mouse Wheel*/
 extern INT PP6_MouseWheel;
