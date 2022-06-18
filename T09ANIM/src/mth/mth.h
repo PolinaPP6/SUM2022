@@ -15,6 +15,7 @@
 
 /* Degrees to radians conversion */
 #define D2R(A) ((A) * (PI / 180.0))
+#define R2D(A) ((A) * (180 / PI))
 #define Degree2Radian(a) D2R(a)
 
 /* Base float point types */
@@ -53,11 +54,18 @@ __inline VEC VecSet( FLT X, FLT Y, FLT Z )
 }/* End of 'VecSet' function */
 
 /*implementation functions*/
+__inline VEC2 Vec2Set( FLT X, FLT Y )
+{
+  VEC2 v = {X, Y};
+  return v;
+}/* End of 'Vec2Set' function */
+
+/*implementation functions*/
 __inline VEC4 VecSet4( FLT X, FLT Y, FLT Z, FLT W )
 {
   VEC4 v = {X, Y, Z, W};
   return v;
-}/* End of 'VecSet' function */
+}/* End of 'VecSet4' function */
 
 #define COM_MIN(A, B) ((A) < (B) ? (A) : (B))
 #define COM_MAX(A, B) ((A) > (B) ? (A) : (B))
@@ -443,8 +451,6 @@ __inline MATR MatrInverse( MATR M )
   MATR r;
 
   if (det == 0)
-    return MatrIdentity();
-
   /* build adjoint matrix */
   r.A[0][0] =
     + MatrDeterm3x3(M.A[1][1], M.A[1][2], M.A[1][3],
@@ -465,54 +471,55 @@ __inline MATR MatrInverse( MATR M )
 
 
   r.A[0][1] =
-    + MatrDeterm3x3(M.A[0][1], M.A[0][2], M.A[0][3],
+    - MatrDeterm3x3(M.A[0][1], M.A[0][2], M.A[0][3],
                     M.A[2][1], M.A[2][2], M.A[2][3],
                     M.A[3][1], M.A[3][2], M.A[3][3]) / det;
   r.A[1][1] =
-    - MatrDeterm3x3(M.A[0][0], M.A[0][2], M.A[0][3],
+    + MatrDeterm3x3(M.A[0][0], M.A[0][2], M.A[0][3],
                     M.A[2][0], M.A[2][2], M.A[2][3],
                     M.A[3][0], M.A[3][2], M.A[3][3]) / det;
   r.A[2][1] =
-    + MatrDeterm3x3(M.A[0][0], M.A[0][1], M.A[0][3],
+    - MatrDeterm3x3(M.A[0][0], M.A[0][1], M.A[0][3],
                     M.A[2][0], M.A[2][1], M.A[2][3],
                     M.A[3][0], M.A[3][1], M.A[3][3]) / det;
   r.A[3][1] =
-    - MatrDeterm3x3(M.A[0][0], M.A[0][1], M.A[0][2],
+    + MatrDeterm3x3(M.A[0][0], M.A[0][1], M.A[0][2],
                     M.A[2][0], M.A[2][1], M.A[2][2],
                     M.A[3][0], M.A[3][1], M.A[3][2]) / det;
   r.A[0][2] =
     + MatrDeterm3x3(M.A[0][1], M.A[0][2], M.A[0][3],
                     M.A[1][1], M.A[1][2], M.A[1][3],
                     M.A[3][1], M.A[3][2], M.A[3][3]) / det;
-  r.A[1][1] =
+  r.A[1][2] =
     - MatrDeterm3x3(M.A[0][0], M.A[0][2], M.A[0][3],
                     M.A[1][0], M.A[1][2], M.A[1][3],
                     M.A[3][0], M.A[3][2], M.A[3][3]) / det;
-  r.A[2][1] =
+  r.A[2][2] =
     + MatrDeterm3x3(M.A[0][0], M.A[0][1], M.A[0][3],
                     M.A[1][0], M.A[1][1], M.A[1][3],
                     M.A[3][0], M.A[3][1], M.A[3][3]) / det;
-  r.A[3][1] =
+  r.A[3][2] =
     - MatrDeterm3x3(M.A[0][0], M.A[0][1], M.A[0][2],
                     M.A[1][0], M.A[1][1], M.A[1][2],
                     M.A[3][0], M.A[3][1], M.A[3][2]) / det;
 
-  r.A[0][2] =
-    + MatrDeterm3x3(M.A[0][1], M.A[0][2], M.A[0][3],
+  r.A[0][3] =
+    - MatrDeterm3x3(M.A[0][1], M.A[0][2], M.A[0][3],
                     M.A[1][1], M.A[1][2], M.A[1][3],
                     M.A[2][1], M.A[2][2], M.A[2][3]) / det;
-  r.A[1][1] =
-    - MatrDeterm3x3(M.A[0][0], M.A[0][2], M.A[0][3],
+  r.A[1][3] =
+    + MatrDeterm3x3(M.A[0][0], M.A[0][2], M.A[0][3],
                     M.A[1][0], M.A[1][2], M.A[1][3],
                     M.A[2][0], M.A[2][2], M.A[2][3]) / det;
-  r.A[2][1] =
-    + MatrDeterm3x3(M.A[0][0], M.A[0][1], M.A[0][3],
+  r.A[2][3] =
+    - MatrDeterm3x3(M.A[0][0], M.A[0][1], M.A[0][3],
                     M.A[1][0], M.A[1][1], M.A[1][3],
                     M.A[2][0], M.A[2][1], M.A[2][3]) / det;
-  r.A[3][1] =
-    - MatrDeterm3x3(M.A[0][0], M.A[0][1], M.A[0][2],
+  r.A[3][3] =
+    + MatrDeterm3x3(M.A[0][0], M.A[0][1], M.A[0][2],
                     M.A[1][0], M.A[1][1], M.A[1][2],
                     M.A[2][0], M.A[2][1], M.A[2][2]) / det;
+ return MatrIdentity();
 }/**/
 
 /* Perspective (frustum) projection matrix setup function.
@@ -573,7 +580,9 @@ __inline MATR MatrView( VEC Loc, VEC At, VEC Up1 )
   MATR m =
   {
     {
-      {Right.X, Up.X, -Dir.X, 0}, {Right.Y, Up.Y, -Dir.Y, 0}, {Right.Z, Up.Z, -Dir.Z, 0},
+      {Right.X, Up.X, -Dir.X, 0},
+      {Right.Y, Up.Y, -Dir.Y, 0},
+      {Right.Z, Up.Z, -Dir.Z, 0},
       {-VecDotVec(Loc, Right), -VecDotVec(Loc, Up), VecDotVec(Loc, Dir), 1}
     }
   };
