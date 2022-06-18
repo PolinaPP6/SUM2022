@@ -66,6 +66,9 @@ pp6UNIT * PP6_UnitCreateControl( VOID );
 /*LANDSCAPE*/
 pp6UNIT * PP6_UnitCreateLand( VOID );
 
+/*g3dm*/
+pp6UNIT * PP6_UnitCreateg3dm( VOID );
+
 /*Mouse Wheel*/
 extern INT PP6_MouseWheel;
 
