@@ -240,9 +240,21 @@
 						RelativePath=".\src\anim\rnd\rndprim.c"
 						>
 					</File>
+					<File
+						RelativePath=".\src\anim\rnd\rndprims.c"
+						>
+					</File>
 					<Filter
 						Name="Resourses"
 						>
+						<File
+							RelativePath=".\src\anim\rnd\res\rndfnt.c"
+							>
+						</File>
+						<File
+							RelativePath=".\src\anim\rnd\res\rndmtl.c"
+							>
+						</File>
 						<File
 							RelativePath=".\src\anim\rnd\res\rndres.c"
 							>
@@ -253,6 +265,10 @@
 						</File>
 						<File
 							RelativePath=".\src\anim\rnd\res\rndshd.c"
+							>
+						</File>
+						<File
+							RelativePath=".\src\anim\rnd\res\rndtex.c"
 							>
 						</File>
 					</Filter>
@@ -279,6 +295,14 @@
 				</File>
 				<File
 					RelativePath=".\src\units\u_ctrl.c"
+					>
+				</File>
+				<File
+					RelativePath=".\src\units\u_g3dm.c"
+					>
+				</File>
+				<File
+					RelativePath=".\src\units\u_land.c"
 					>
 				</File>
 				<File
