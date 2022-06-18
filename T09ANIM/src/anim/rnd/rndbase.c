@@ -1,6 +1,6 @@
 /* FILE NAME   : rndbase.c
  * PROGRAMMER  : PP6
- * LAST UPDATE : 09.06.2022
+ * LAST UPDATE : 17.06.2022
  * PURPOSE     : 3D animation project.
  *               Startup module.
  */
@@ -78,6 +78,9 @@ VOID PP6_RndInit( HWND hWnd )
 
   glClearColor(0.7, 0.2, 0.13, 1);
   glEnable(GL_DEPTH_TEST);
+
+  glEnable(GL_PRIMITIVE_RESTART);
+  glPrimitiveRestartIndex(-1);
   PP6_RndCamSet(VecSet(0, 1, 50), VecSet(0, 0, 1), VecSet(0, 1, 0));
   PP6_RndResInit();
 }
@@ -145,5 +148,12 @@ VOID PP6_RndProjSet( VOID )
 VOID PP6_RndCamSet( VEC Loc, VEC At, VEC Up )
 {
   PP6_RndMatrView = MatrView(Loc, At, Up);
+
+  PP6_RndCamLoc = Loc;
+  PP6_RndCamRight = VecSet(PP6_RndMatrView.A[0][0], PP6_RndMatrView.A[1][0], PP6_RndMatrView.A[2][0]);
+  PP6_RndCamUp = VecSet(PP6_RndMatrView.A[0][1], PP6_RndMatrView.A[1][1], PP6_RndMatrView.A[2][1]);
+  PP6_RndCamDir = VecSet(-PP6_RndMatrView.A[0][2], -PP6_RndMatrView.A[1][2], -PP6_RndMatrView.A[2][2]);
+  PP6_RndCamAt = At;
+  
   PP6_RndMatrVP = MatrMulMatr(PP6_RndMatrView, PP6_RndMatrProj);
 }

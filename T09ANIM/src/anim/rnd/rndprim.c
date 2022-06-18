@@ -1,6 +1,6 @@
 /* FILE NAME   : rndprim.c
  * PROGRAMMER  : PP6
- * LAST UPDATE : 09.06.2022
+ * LAST UPDATE : 17.06.2022
  * PURPOSE     : 3D animation project.
  *               Primitive module.
  */
@@ -11,7 +11,7 @@
 #include "rnd.h"
 
 
-VOID PP6_RndPrimCreate( pp6PRIM *Pr, pp6VERTEX *V, INT NoofV, INT *I, INT NoofI )
+VOID PP6_RndPrimCreate( pp6PRIM *Pr, pp6PRIM_TYPE Type, pp6VERTEX *V, INT NoofV, INT *I, INT NoofI )
 {
   /* Set all primitive data fields to 0 */
   memset(Pr, 0, sizeof(pp6PRIM));
@@ -48,7 +48,9 @@ VOID PP6_RndPrimCreate( pp6PRIM *Pr, pp6VERTEX *V, INT NoofV, INT *I, INT NoofI 
   Pr->NumOfV = NoofV;
   Pr->NumOfI = NoofI;
   /*Set default transform (identity)*/
+  Pr->Type = Type;
   Pr->Trans = MatrIdentity();
+  Pr->Trans = MatrScale(VecSet(0.1, 0.1, 0.1));
 } /* End of 'PP6_RndPrimCreate' function */
 
 VOID PP6_RndPrimFree( pp6PRIM *Pr )
@@ -69,21 +71,32 @@ VOID PP6_RndPrimFree( pp6PRIM *Pr )
 
 VOID PP6_RndPrimDraw( pp6PRIM *Pr, MATR World )
 {
-  MATR WVP = MatrMulMatr(Pr->Trans, MatrMulMatr(World, PP6_RndMatrVP));
+  MATR
+    w = MatrMulMatr(Pr->Trans, World),
+    winv = MatrTranspose(MatrInverse(w)),
+    WVP = MatrMulMatr(w, PP6_RndMatrVP);
   INT loc;
   INT PP6_RndProgId;
+  INT gl_prim_type = Pr->Type == PP6_RND_PRIM_TRIMESH ? GL_TRIANGLES :
+                     Pr->Type == PP6_RND_PRIM_TRISTRIP ? GL_TRIANGLE_STRIP :
+                     Pr->Type == PP6_RND_PRIM_LINES ? GL_LINES :
+                     GL_POINTS;
 
   glLoadMatrixf(WVP.A[0]);
 
-  PP6_RndProgId = PP6_RndShaders[0].ProgId;
-  glUseProgram(PP6_RndProgId);
+  PP6_RndProgId = PP6_RndMtlApply(Pr->MtlNo);
+
   if ((loc = glGetUniformLocation(PP6_RndProgId, "MatrWVP")) != -1)
     glUniformMatrix4fv(loc, 1, FALSE, WVP.A[0]);
-  if ((loc = glGetUniformLocation(PP6_RndProgId, "Time")) != -1)
-    glUniform1f(loc, PP6_Anim.Time);
+  if ((loc = glGetUniformLocation(PP6_RndProgId, "MatrW")) != -1)
+    glUniformMatrix4fv(loc, 1, FALSE, w.A[0]);
+  if ((loc = glGetUniformLocation(PP6_RndProgId, "MatrWInv")) != -1)
+    glUniformMatrix4fv(loc, 1, FALSE, winv.A[0]);
+  if ((loc = glGetUniformLocation(PP6_RndProgId, "CamLoc")) != -1)
+    glUniform3fv(loc, 1, &PP6_RndCamLoc.X);
   glBindVertexArray(Pr->VA);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Pr->IBuf);
-  glDrawElements(GL_TRIANGLES, Pr->NumOfI, GL_UNSIGNED_INT, NULL);
+  glDrawElements(gl_prim_type, Pr->NumOfI, GL_UNSIGNED_INT, NULL);
   glBindVertexArray(0);
   glUseProgram(0);
 } /* End of 'PP6_RndPrimDraw' function */
@@ -96,7 +109,7 @@ BOOL PP6_RndPrimLoad( pp6PRIM *Pr, CHAR *FileName )
   VEC L = VecNormalize(VecSet(1, 1, 1));
   INT *I;
   INT i;
-  INT n = 0, nc, n0, n1;
+  FLT nl;
   static CHAR Buf[1000];
 
   memset(Pr, 0, sizeof(pp6PRIM));
@@ -142,7 +155,7 @@ BOOL PP6_RndPrimLoad( pp6PRIM *Pr, CHAR *FileName )
     }
     else if (Buf[0] == 'f' && Buf[1] == ' ')
     {
-      INT i;
+      INT i, n = 0, nc, n0, n1;
 
       for (i = 1; Buf[i] != 0; i++)
         if (isspace((UCHAR)Buf[i - 1]) &&!isspace((UCHAR)Buf[i]))
@@ -163,20 +176,23 @@ BOOL PP6_RndPrimLoad( pp6PRIM *Pr, CHAR *FileName )
         }
     }
   fclose(F);
-  PP6_RndTriMeshEvalNormals(V, nv, I, ni);
+  PP6_RndTriMeshAutoNormals(V, nv, I, ni);
   for (i = 0; i < nv; i++)
   {
     V[i].N = VecNormalize(V[i].N);
 
-    FLT n1 = VecDotVec(V[i].N, L);
-    V[i].C = Vec4Set(0.6 * n1, 0.1 * n1, 0.5 * n1, 1);
+    nl = VecDotVec(V[i].N, L);
+
+    if (nl < 0.1)
+      nl = 0.1;
+    V[i].C = VecSet4(0.6 * nl, 0.1 * nl, 0.5 * nl, 1);
   }
-  PP6_RndPrimCreate(Pr, V, nv, I, ni);
+  PP6_RndPrimCreate(Pr, PP6_RND_PRIM_TRIMESH, V, nv, I, ni);
   free(V);
   return TRUE;
 } /* End of 'PP6_RndPrimLoad' function */
 
-VOID PP6_RndTriMeshEvalNormals( pp6VERTEX *V, INT NumOfV, INT *I, INT NumOfI)
+VOID PP6_RndTriMeshAutoNormals( pp6VERTEX *V, INT NumOfV, INT *I, INT NumOfI)
   {
     INT i;
 
@@ -197,3 +213,62 @@ VOID PP6_RndTriMeshEvalNormals( pp6VERTEX *V, INT NumOfV, INT *I, INT NumOfI)
     for (i = 0; i < NumOfV; i++)
       V[i].N = VecNormalize(V[i].N);
   }
+
+/*GRID*/
+BOOL PP6_RndPrimCreateGrid( pp6PRIM *Pr, INT SplitW, INT SplitH, pp6VERTEX *V )
+{
+  INT *Ind;
+  INT k, i, j, num_of_indices;
+
+
+  memset(Pr, 0, sizeof(pp6PRIM));
+  num_of_indices = (SplitH - 1) * (SplitW * 2 + 1) - 1;
+  if ((Ind = malloc(sizeof(INT) * num_of_indices)) == NULL)
+    return FALSE;
+
+  /* Set indexes */
+  for (k = 0, i = 0; i < SplitH - 1; i++)
+  {
+    for (j = 0; j < SplitW; j++)
+    {
+      Ind[k++] = (i + 1) * SplitW + j;
+      Ind[k++] = (i + 0) * SplitW + j;
+    }
+    if (i != SplitH - 2)
+      Ind[k++] = -1;
+  }
+  PP6_RndPrimCreate(Pr, PP6_RND_PRIM_TRISTRIP, V, SplitW * SplitH, Ind, num_of_indices);
+  return TRUE;
+}
+VOID PP6_RndPrimGridEvalNormals( INT SplitW, INT SplitH, pp6VERTEX *V )
+{
+  INT i, j;
+
+  for (i = 0; i < SplitW * SplitH; i++)
+    V[i].N = VecSet(0, 0, 0);
+
+  for (i = 0; i < SplitH - 1; i++)
+    for (j = 0; j < SplitW - 1; j++)
+    {
+      pp6VERTEX
+        *P00 = &V[i * SplitW + j],
+        *P01 = &V[i * SplitW + j + 1],
+        *P10 = &V[(i + 1) * SplitW + j],
+        *P11 = &V[(i + 1) * SplitW + j + 1];
+      VEC N;
+
+      N = VecNormalize(VecCrossVec(VecSubVec(P00->P, P10->P),
+                                   VecSubVec(P11->P, P10->P)));
+      P00->N = VecAddVec(P00->N, N);
+      P10->N = VecAddVec(P10->N, N);
+      P11->N = VecAddVec(P11->N, N);
+
+      N = VecNormalize(VecCrossVec(VecSubVec(P11->P, P01->P),
+                                   VecSubVec(P00->P, P01->P)));
+      P00->N = VecAddVec(P00->N, N);
+      P01->N = VecAddVec(P01->N, N);
+      P11->N = VecAddVec(P11->N, N);
+  }
+  for (i = 0; i < SplitW * SplitH; i++)
+    V[i].N = VecNormalize(V[i].N);
+}

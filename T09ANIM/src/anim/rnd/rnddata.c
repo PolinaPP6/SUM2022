@@ -1,6 +1,6 @@
 /* FILE NAME   : rnddata.c
  * PROGRAMMER  : PP6
- * LAST UPDATE : 09.06.2022
+ * LAST UPDATE : 17.06.2022
  * PURPOSE     : 3D animation project.
  *               Rendering system declaration module.
  */
@@ -20,4 +20,11 @@ MATR
   PP6_RndMatrView, /* View coordinate system matrix */
   PP6_RndMatrProj, /* Projection coordinate system matrix */
   PP6_RndMatrVP;   /* Stored (View * Proj) matrix */
+
+VEC
+  PP6_RndCamLoc,
+  PP6_RndCamDir,
+  PP6_RndCamUp,
+  PP6_RndCamRight,
+  PP6_RndCamAt;
 
