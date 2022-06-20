@@ -50,7 +50,6 @@ VOID PP6_RndPrimCreate( pp6PRIM *Pr, pp6PRIM_TYPE Type, pp6VERTEX *V, INT NoofV,
   /*Set default transform (identity)*/
   Pr->Type = Type;
   Pr->Trans = MatrIdentity();
-  Pr->Trans = MatrScale(VecSet(0.1, 0.1, 0.1));
 } /* End of 'PP6_RndPrimCreate' function */
 
 VOID PP6_RndPrimFree( pp6PRIM *Pr )
@@ -94,9 +93,16 @@ VOID PP6_RndPrimDraw( pp6PRIM *Pr, MATR World )
     glUniformMatrix4fv(loc, 1, FALSE, winv.A[0]);
   if ((loc = glGetUniformLocation(PP6_RndProgId, "CamLoc")) != -1)
     glUniform3fv(loc, 1, &PP6_RndCamLoc.X);
-  glBindVertexArray(Pr->VA);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Pr->IBuf);
-  glDrawElements(gl_prim_type, Pr->NumOfI, GL_UNSIGNED_INT, NULL);
+
+    glBindVertexArray(Pr->VA);
+  if (Pr->IBuf == NULL || Pr->NumOfI == 0)
+    glDrawArrays(gl_prim_type, 0, Pr->NumOfV);
+  else
+  {
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Pr->IBuf);
+    glDrawElements(gl_prim_type, Pr->NumOfI, GL_UNSIGNED_INT, NULL);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  }
   glBindVertexArray(0);
   glUseProgram(0);
 } /* End of 'PP6_RndPrimDraw' function */

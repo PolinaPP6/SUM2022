@@ -67,13 +67,6 @@ typedef struct tagpp6MATERIAL
   CHAR ShaderStr[PP6_STR_MAX];
 } pp6MATERIAL;
 
-/* Font description structure */
-typedef struct tagpp6FONT
-{
-  DWORD LineH, BaseH; /* Font line height and base line height in pixels */
-  FLT AdvanceX[256];  /* Every letter shift right value (0 if no letter present) */
-} pp6FONT;
-
 extern pp6SHADER PP6_RndShaders[PP6_MAX_SHADERS];    /* Array of shaders */
 extern INT PP6_RndShadersSize;                       /* Shadres array store size */
 extern pp6TEXTURE PP6_RndTextures[PP6_MAX_TEXTURES]; /* Array of textures */
@@ -220,7 +213,7 @@ VOID PP6_RndFntInit( VOID );
  * ARGUMENTS: None.
  * RETURNS: None.
  */
-VOID PP6_RndFntClose( CHAR *FileName );
+VOID PP6_RndFntClose( VOID );
 
 /* Draw string function.
  * ARGUMENTS:

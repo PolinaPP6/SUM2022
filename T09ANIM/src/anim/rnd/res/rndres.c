@@ -17,6 +17,7 @@ VOID PP6_RndResInit( VOID )
   PP6_RndShdInit();
   PP6_RndTexInit();
   PP6_RndMtlInit();
+  PP6_RndFntInit();
 } /* End of 'PP6_RndResInit' function */
 
 /* Resourses system deinitialization function.
@@ -28,7 +29,7 @@ VOID PP6_RndResClose( VOID )
   PP6_RndShdClose();
   PP6_RndTexClose();
   PP6_RndMtlClose();
-
+  PP6_RndFntClose();
 } /* End of 'PP6_RndResClose' function */
 
 /* END OF 'rndres.c' FILE */

@@ -9,6 +9,13 @@
 
 #include "pp6.h"
 
+/* Font description structure */
+typedef struct tagpp6FONT
+{
+  DWORD LineH, BaseH; /* Font line height and base line height in pixels */
+  FLT AdvanceX[256];  /* Every letter shift right value (0 if no letter present) */
+} pp6FONT;
+
 /* Font data */
 static pp6FONT PP6_RndFntFont;
 
@@ -62,6 +69,7 @@ BOOL PP6_RndFntLoad( CHAR *FileName )
   mtl.ShdNo = PP6_RndShdAdd("font");
   PP6_RndFntMtlNo = PP6_RndMtlAdd(&mtl);
 
+
   for (i = 0; i < 256; i++)
   {
     PP6_RndPrimFree(&PP6_RndFntChars[i]);
@@ -78,14 +86,14 @@ BOOL PP6_RndFntLoad( CHAR *FileName )
  */
 VOID PP6_RndFntInit( VOID )
 {
-  PP6_RndFntLoad("bin/fonts/arial.g3df");
+  PP6_RndFntLoad("bin/fonts/Arial.g3df");
 } /* End of 'PP6_RndFntInit' function */
 
 /* Deinit font subsystem function.
  * ARGUMENTS: None.
  * RETURNS: None.
  */
-VOID PP6_RndFntClose( CHAR *FileName )
+VOID PP6_RndFntClose( VOID )
 {
   INT i;
 
