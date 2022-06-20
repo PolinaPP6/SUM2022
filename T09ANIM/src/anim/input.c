@@ -18,10 +18,10 @@ static VOID PP6_AnimKeyboardInit( VOID )
 {
   INT i;
 
-  memcpy(KeysOld, PP6_Anim.Keys, 256);
   GetKeyboardState(PP6_Anim.Keys);
   for (i = 0; i < 256; i++)
-    KeysOld[i] = PP6_Anim.KeysClick[i];
+    PP6_Anim.KeysClick[i] = 0;
+  memcpy(KeysOld, PP6_Anim.Keys, 256);
 }
 
 static VOID PP6_AnimKeyboardResponse( VOID )
@@ -34,6 +34,7 @@ static VOID PP6_AnimKeyboardResponse( VOID )
     PP6_Anim.Keys[i] >>= 7;
     PP6_Anim.KeysClick[i] = PP6_Anim.Keys[i] && !KeysOld[i];
   }
+  memcpy(KeysOld, PP6_Anim.Keys, 256);
 }
 
 static VOID PP6_AnimMouseInit( VOID )

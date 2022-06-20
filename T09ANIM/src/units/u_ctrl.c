@@ -9,11 +9,13 @@
 #include "anim/anim.h"
 #include <mmsystem.h>
 #pragma comment(lib, "winmm")
+
 typedef struct
 {
   UNIT_BASE_FIELDS;
   VEC CamLoc, CamDir;
   DBL speed, AngleSpeed;
+  pp6PRIM Axes;
 }pp6UNIT_CONTROL;
 
 /* Unit initialization function.
@@ -129,6 +131,20 @@ static VOID PP6_UnitResponse( pp6UNIT_CONTROL *Uni, pp6ANIM *Ani )
  */
 static VOID PP6_UnitRender( pp6UNIT_CONTROL *Uni, pp6ANIM *Ani )
 {
+  MATR save;
+  static CHAR Buf[102];
+
+  sprintf(Buf, "FPS: %.3f", Ani->FPS);
+  SetWindowText(Ani->hWnd, Buf);
+
+  glLineWidth(3);
+  PP6_RndPrimDraw(&Uni->Axes, MatrIdentity());
+  glLineWidth(1);
+
+  save = PP6_RndMatrVP;
+  PP6_RndMatrVP = MatrOrtho(0, Ani->W, -Ani->H, 0, -1, 1);
+  PP6_RndFntDraw(Buf, VecSet(0, 0, 0), 32);
+  PP6_RndMatrVP = save;
 } /* End of 'VG4_UnitRender' function */
 
 /* Unit creation function.

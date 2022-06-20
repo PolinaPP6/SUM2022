@@ -451,6 +451,7 @@ __inline MATR MatrInverse( MATR M )
   MATR r;
 
   if (det == 0)
+    return MatrIdentity();
   /* build adjoint matrix */
   r.A[0][0] =
     + MatrDeterm3x3(M.A[1][1], M.A[1][2], M.A[1][3],
@@ -519,7 +520,7 @@ __inline MATR MatrInverse( MATR M )
     + MatrDeterm3x3(M.A[0][0], M.A[0][1], M.A[0][2],
                     M.A[1][0], M.A[1][1], M.A[1][2],
                     M.A[2][0], M.A[2][1], M.A[2][2]) / det;
- return MatrIdentity();
+  return r;
 }/**/
 
 /* Perspective (frustum) projection matrix setup function.

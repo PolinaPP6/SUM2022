@@ -19,7 +19,7 @@ out vec4 DrawColor;
 
 void main( void )
 {
-  gl_Position = MatrWVP * vec4(InPosition + vec3(0, 0, 0), 1);
+  gl_Position = MatrWVP * vec4(InPosition, 1);
   DrawPos = (MatrW * vec4(InPosition, 1)).xyz;
   DrawColor = InColor;
   DrawNormal = mat3(MatrWInv) * InNormal;

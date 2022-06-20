@@ -29,7 +29,10 @@ static VOID PP6_UnitInit( pp6UNIT_G3DM *Uni, pp6ANIM *Ani )
   Uni->Pos1 = VecSet(0, -69, 10);
   Uni->Pos2 = VecSet(0, -100, 0);
   PP6_RndPrimsLoad(&Uni->g3dm1, "bin/models/elephant.g3dm");
+  Uni->g3dm1.Trans = MatrScale(VecSet(0.1, 0.1, 0.1));
+  PP6_RndMtlGet(Uni->g3dm1.Prims[0].MtlNo)->Kd = VecSet(0.6, 0.6, 0.6);
   PP6_RndPrimsLoad(&Uni->g3dm2, "bin/models/TORTOISE.g3dm");
+   Uni->g3dm2.Trans = MatrScale(VecSet(50, 50, 50));
 } /* End of 'PP6_UnitInit' function */
 
 /* Unit deinitialization function.
